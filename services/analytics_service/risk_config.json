@@ -1,0 +1,12 @@
+{
+  "label": "Prototype risk index (IMD-style criteria) - NOT an official IMD heatwave declaration",
+  "abs_threshold_c": {"plains": 40.0, "coastal": 37.0, "hill": 30.0},
+  "departure_heatwave_c": 4.5,
+  "departure_severe_c": 6.5,
+  "plains_abs_heatwave_c": 45.0,
+  "plains_abs_severe_c": 47.0,
+  "moderate_margin_c": 3.0,
+  "levels": ["Low", "Moderate", "High", "Severe"],
+  "hotspot_weights": {"hw_days": 0.5, "p95": 0.25, "streak": 0.25},
+  "verification_note": "Thresholds are recalled from published IMD heatwave criteria (plains 40C, coastal 37C, hills 30C; departure from normal >=4.5C heatwave / >=6.5C severe; absolute >=45C / >=47C in plains). They could NOT be verified online while building this prototype. Verify against the current IMD manual before any real use; all values here are editable."
+}

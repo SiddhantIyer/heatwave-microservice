@@ -1,0 +1,40 @@
+# NOTE: written for the demo but not executed in the authoring sandbox (no Docker there).
+# Local (non-Docker) run is the verified path: see README.
+services:
+  data_service:
+    build: ./services/data_service
+    environment: { PORT: "8001", DATA_CSV: /data/sample_tmax.csv, CORS_ORIGINS: "*" }
+    volumes: ["./data:/data:ro"]
+    ports: ["8001:8001"]
+  analytics_service:
+    build: ./services/analytics_service
+    environment: { PORT: "8002", DATA_SERVICE_URL: "http://data_service:8001" }
+    depends_on: [data_service]
+    ports: ["8002:8002"]
+  geo_service:
+    build: ./services/geo_service
+    environment: { PORT: "8003", ANALYTICS_SERVICE_URL: "http://analytics_service:8002" }
+    depends_on: [analytics_service]
+    ports: ["8003:8003"]
+  advisory_service:
+    build: ./services/advisory_service
+    environment:
+      PORT: "8004"
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}      # optional; empty = rule-based advisories
+      ADVISORY_LLM_MODEL: ${ADVISORY_LLM_MODEL:-claude-sonnet-5-5}
+    ports: ["8004:8004"]
+  gateway:
+    build: ./services/gateway
+    environment:
+      PORT: "8000"
+      DATA_SERVICE_URL: "http://data_service:8001"
+      ANALYTICS_SERVICE_URL: "http://analytics_service:8002"
+      GEO_SERVICE_URL: "http://geo_service:8003"
+      ADVISORY_SERVICE_URL: "http://advisory_service:8004"
+      CORS_ORIGINS: "http://localhost:8080,http://localhost:5173"
+    depends_on: [data_service, analytics_service, geo_service, advisory_service]
+    ports: ["8000:8000"]
+  frontend:
+    build: ./frontend
+    depends_on: [gateway]
+    ports: ["8080:80"]
